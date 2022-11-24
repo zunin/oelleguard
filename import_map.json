@@ -9,6 +9,9 @@
     "twind": "https://esm.sh/twind@0.16.17",
     "twind/": "https://esm.sh/twind@0.16.17/",
     "palette": "https://esm.sh/@catppuccin/palette@0.1.5",
-    "palette/": "https://esm.sh/@catppuccin/palette@00.1.5/"
+    "palette/": "https://esm.sh/@catppuccin/palette@00.1.5/",
+    "oauth2": "https://deno.land/x/oauth4webapi@v1.4.0/src/index.ts",
+    "@ory/client": "https://esm.sh/@ory/client@0.2.0-alpha.60",
+    "@ory/client/": "https://esm.sh/v99/@ory/client@0.2.0-alpha.60/es2022/"
   }
 }

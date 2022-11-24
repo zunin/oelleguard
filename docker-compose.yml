@@ -1,0 +1,60 @@
+version: '3.9'
+services:
+    
+    psql:
+        image: postgres:13.2
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: ory-user
+            POSTGRES_PASSWORD: ory-pass
+            POSTGRES_DB: ory-data
+        ports:
+            - 5432:5432
+        volumes:
+          - pgdata:/var/lib/postgresql/data
+        networks:
+            - ory
+    hydra-migrate:
+        depends_on:
+            - psql
+        image: oryd/hydra:v1.10.6
+        restart: on-failure
+        command:
+            migrate -c /etc/config/hydra/hydra.yml sql -e --yes
+        environment:
+            DSN: postgres://ory-user:ory-pass@psql:5432/ory-data?sslmode=disable&max_conns=20&max_idle_conns=4
+        volumes:
+            -
+                type: bind
+                source: ./configs/hydra
+                target: /etc/config/hydra
+        networks:
+            - ory
+    hydra:
+        depends_on:
+            - hydra-migrate
+        image: oryd/hydra:v1.10.6
+        restart: unless-stopped
+        command:
+            serve -c /etc/config/hydra/hydra.yml all --dangerous-force-http
+        environment:
+            DSN: postgres://ory-user:ory-pass@psql:5432/ory-data?sslmode=disable&max_conns=20&max_idle_conns=4
+            OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES: public
+            LOG_LEVEL: trace
+        volumes:
+            -
+                type: bind
+                source: ./configs/hydra
+                target: /etc/config/hydra
+        ports:
+            - 4444:4444
+            - 4445:4445
+            - 5555:5555
+        networks:
+            - ory
+
+networks:
+    ory:
+
+volumes:
+  pgdata:
